@@ -1,33 +1,55 @@
-import java.awt.*;
-import javax.swing.*;
+import javax.swing.JPanel;
+import java.awt.Graphics;
 
-class UnMobile extends JPanel implements Runnable
-{
-    int saLargeur, saHauteur, sonDebDessin;
-    final int sonPas = 10, sonTemps=50, sonCote=40;
-    
-    UnMobile(int telleLargeur, int telleHauteur)
-    {
-	super();
-	saLargeur = telleLargeur;
-	saHauteur = telleHauteur;
-	setSize(telleLargeur, telleHauteur);
-    }
+public class UnMobile extends JPanel implements Runnable {
+	private int Largeur, Hauteur, coordMobile;
+	private final int Pas = 10, Temps = 50, Cote = 40;
+	private boolean dirDroite = true;  
+	//True = droite, false = gauche
+	private boolean enMarche = true;
 
-    public void run()
-    {
-	for (sonDebDessin=0; sonDebDessin < saLargeur - sonPas; sonDebDessin+= sonPas)
-	    {
-		repaint();
-		try{Thread.sleep(sonTemps);}
-		catch (InterruptedException telleExcp)
-		    {telleExcp.printStackTrace();}
-	    }
-    }
+	public UnMobile(int parLargeur, int parHauteur) {
+		super();
+		this.Largeur = parLargeur;
+		this.Hauteur = parHauteur;
+		setSize(parLargeur, parHauteur);
+	}
 
-    public void paintComponent(Graphics telCG)
-    {
-	super.paintComponent(telCG);
-	telCG.fillRect(sonDebDessin, saHauteur/2, sonCote, sonCote);
-    }
+	public void run() {
+		while (true) {
+			if(enMarche) {
+				if (dirDroite) {
+					coordMobile += Pas;
+					if (coordMobile >= Largeur - Cote) {
+						dirDroite = false;  // Change de direction
+					}
+				} else {
+					coordMobile -= Pas;
+					if (coordMobile <= 0) {
+						dirDroite = true;  // Change de direction
+					}
+				}
+			}
+			repaint();
+
+			try {
+				Thread.sleep(Temps);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void setEnMarche(boolean enMarche) {
+		this.enMarche = enMarche;
+	}
+
+	public boolean isEnMarche() {
+		return enMarche;
+	}
+
+	public void paintComponent(Graphics telContexteGraphique) {
+		super.paintComponent(telContexteGraphique);
+		telContexteGraphique.fillRect(coordMobile, Hauteur / 2, Cote, Cote);
+	}
 }

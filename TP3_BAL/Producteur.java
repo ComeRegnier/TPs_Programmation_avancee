@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Producteur extends Thread {
     private BAL bal;
 
@@ -6,11 +8,13 @@ public class Producteur extends Thread {
     }
 
     public void run() {
-        try {
-            for (int i = 1; i <= 5; i++) { // Déposer 5 lettres
-                bal.deposer("Lettre " + i);
-                Thread.sleep(1000); // Pause entre les dépôts
-            }
+        try (Scanner scanner = new Scanner(System.in)) {
+            String lettre;
+            do {
+                System.out.print("Entrez une lettre : ");
+                lettre = scanner.nextLine();
+                bal.deposer(lettre);
+            } while (!lettre.equals("Q"));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

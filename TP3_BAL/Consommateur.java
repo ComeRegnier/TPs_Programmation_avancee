@@ -7,10 +7,10 @@ public class Consommateur extends Thread {
 
     public void run() {
         try {
-            for (int i = 1; i <= 5; i++) { // Retirer 5 lettres
-                String lettre = bal.retirer();
-                Thread.sleep(1500); // Pause après chaque retrait
-            }
+            String lettre;
+            do {
+                lettre = bal.retirer();
+            } while (!lettre.equals("Q"));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

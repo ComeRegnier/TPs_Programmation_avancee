@@ -1,0 +1,63 @@
+# **Compte Rendu : TP Java Threads - Producteur/Consommateur**
+
+## **Introduction**
+Ce TP a pour objectif d'explorer les concepts de la programmation concurrente en Java à travers un modèle producteur/consommateur. Deux exercices distincts ont été réalisés pour simuler une boîte aux lettres (BAL) et gérer la communication entre threads. Le premier exercice se concentre sur une BAL simple, tandis que le second généralise cette approche en utilisant un tampon circulaire.
+
+---
+
+## **Exercice 1 : Modèle Producteur/Consommateur Simple**
+
+### **Objectif**
+Simuler une boîte aux lettres (BAL) permettant à un producteur de déposer des lettres et à un consommateur de les retirer. Les deux threads doivent fonctionner de manière asynchrone tout en respectant les contraintes suivantes :
+- Le producteur ne peut déposer une lettre que si la BAL est vide.
+- Le consommateur ne peut retirer une lettre que si la BAL contient une lettre.
+
+### **Résumé de la solution**
+- Une classe `BAL` a été créée pour proposer deux services : `deposer` et `retirer`, synchronisés pour garantir l'accès exclusif.
+- Deux threads ont été implémentés :
+  - **Producteur** : Dépose les lettres dans la BAL.
+  - **Consommateur** : Retire les lettres et les affiche.
+- Une amélioration a été apportée dans la partie I2 :
+  - Le producteur saisit les lettres via le clavier.
+  - Les threads s'arrêtent lorsque la lettre `'Q'` est saisie.
+
+---
+
+## **Exercice 2 : Généralisation avec Tampon**
+
+### **Objectif**
+Étendre la solution précédente pour gérer une boîte aux lettres avec un **tampon de taille N**, permettant de stocker plusieurs lettres. Les contraintes ajoutées sont :
+- Le tampon fonctionne comme un tableau circulaire.
+- Le producteur insère les lettres `'A'` à `'Z'`, puis un caractère spécial `'*'` pour signaler la fin.
+- Le consommateur consomme les lettres à un rythme plus lent, simulant une saturation temporaire du tampon.
+
+### **Résumé de la solution**
+- La classe `BAL` a été modifiée pour inclure :
+  - Un tableau circulaire comme tampon.
+  - Deux indices (`tete` et `queue`) pour gérer l'insertion et le retrait.
+  - Une variable `nbLettres` pour suivre le nombre d'éléments présents.
+- Les accès au tampon sont synchronisés pour gérer les cas où le tampon est plein ou vide.
+- Le producteur dépose des lettres de `'A'` à `'Z'` suivies de `'*'`, et le consommateur les retire jusqu'à rencontrer `'*'`.
+
+---
+
+## **Concepts Clés**
+
+### **1. Synchronisation**
+- **`synchronized`** : Garantit l'accès exclusif aux méthodes critiques.
+- **`wait()` et `notifyAll()`** : Permettent la coordination entre threads.
+
+### **2. Tampon Circulaire**
+- Utilisation d'indices pour gérer efficacement les insertions et les retraits dans un tableau circulaire.
+- L'opérateur `%` permet de revenir au début du tableau lorsque les indices atteignent la fin.
+
+### **3. Arrêt Conditionnel**
+- Le caractère spécial `'Q'` (exercice 1) ou `'*'` (exercice 2) est utilisé pour signaler aux threads qu'ils doivent arrêter.
+
+---
+
+## **Conclusion**
+Ce TP a permis de manipuler des concepts essentiels de la programmation concurrente en Java :
+- La synchronisation et la communication inter-threads pour garantir la cohérence des données.
+- L'implémentation d'un tampon circulaire, illustrant la gestion des ressources partagées dans un contexte concurrent.
+Les exercices offrent des bases solides pour développer des systèmes plus complexes. Des extensions possibles incluent la gestion de multiples producteurs et consommateurs ou l'ajout d'une interface graphique pour observer les opérations en temps réel.

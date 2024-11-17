@@ -1,6 +1,8 @@
 public class Main {
     public static void main(String[] args) {
-        BAL bal = new BAL();
+        int tailleTampon = 5; // Taille du tampon
+        BAL bal = new BAL(tailleTampon);
+
         Producteur producteur = new Producteur(bal);
         Consommateur consommateur = new Consommateur(bal);
 

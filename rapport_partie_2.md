@@ -208,22 +208,6 @@ L’implémentation correspond globalement au pseudo-code d’**itération paral
 
 ---
 
-### 4. Limites et optimisations possibles
-
-#### ⚠️ Impact des accès atomiques :
-- Chaque incrémentation de `nAtomSuccess` via `incrementAndGet()` est coûteuse en termes de synchronisation.
-- Environ **75% du temps d’exécution** peut être consacré uniquement à la gestion des accès atomiques !
-
-#### ✅ Optimisations possibles :
-1. **Regroupement local** : chaque thread pourrait maintenir un **compteur local** pour `nAtomSuccess`, puis agréger ces valeurs à la fin pour **réduire la contention**.
-2. **Filtrage des points hors cible** : plutôt que d’incrémenter le compteur atomique à chaque point **dans** la cible, on pourrait :
-   - Incrémenter lorsqu’un point est **en dehors**.
-   - Calculer la valeur **inverse** pour déterminer π.
-
-🔎 **Conclusion**  
-Bien que cette implémentation soit correcte et facilement compréhensible, elle est limitée par des problèmes d’optimisation liés à la **synchronisation atomique**.
-
----
 
 ## B. Analyse de *Pi.java*
 
@@ -237,7 +221,7 @@ Un **Future** est un conteneur pour un résultat **calculé de manière asynchro
   → Cela introduit une **barrière implicite** qui synchronise les résultats des différents threads.
 - **Vérifier l’état d’exécution** : un `Future` peut indiquer si une tâche est **terminée ou a échoué**.
 
-📌 **Pourquoi l’utiliser ici ?**  
+**Pourquoi l’utiliser ici ?**  
 Les **Futures** garantissent que chaque résultat partiel est **prêt avant l’agrégation**, permettant une synchronisation **optimale** entre les threads.
 
 ---
@@ -285,10 +269,10 @@ L'algorithme suit fidèlement le modèle **Master/Worker** décrit en **partie I
 
 | **Critère**           | **Pi.java (Master/Worker)** | **Assignment102 (Itération parallèle)** |
 |----------------------|---------------------------|----------------------------------|
-| **Isolation des calculs** | ✅ Chaque Worker gère ses propres données. | ❌ Accès concurrent à une variable atomique. |
-| **Synchronisation** | ✅ Réduite à l’agrégation finale (moins coûteux). | ❌ Synchronisation fréquente via `AtomicInteger`. |
-| **Gestion des threads** | ✅ Callables et `FixedThreadPool`. | ✅ `ExecutorService` avec `Runnable`. |
-| **Performance attendue** | 🚀 Plus efficace pour un grand nombre de threads. | 🐢 Risque de **goulots d’étranglement** dû aux accès atomiques. |
+| **Isolation des calculs** | Chaque Worker gère ses propres données. | Accès concurrent à une variable atomique. |
+| **Synchronisation** | Réduite à l’agrégation finale (moins coûteux). | Synchronisation fréquente via `AtomicInteger`. |
+| **Gestion des threads** | Callables et `FixedThreadPool`. | `ExecutorService` avec `Runnable`. |
+| **Performance attendue** | Plus efficace pour un grand nombre de threads. | Risque de **goulots d’étranglement** dû aux accès atomiques. |
 
 ---
 
@@ -298,7 +282,7 @@ L’implémentation *Pi.java* est **plus efficace** qu’*Assignment102* car ell
 2. **Minimise les accès concurrents** grâce à l’**isolation des Workers**.
 3. **Optimise la gestion des threads** via les **Futures**, permettant une meilleure scalabilité.
 
-On peut donc **s’attendre à de meilleures performances**, **surtout sur des machines multicœurs** et avec **un grand nombre de points et de threads**. 🚀
+On peut donc **s’attendre à de meilleures performances**, **surtout sur des machines multicœurs** et avec **un grand nombre de points et de threads**. 
 
 # IV. Évaluations et tests de performances
 
@@ -577,5 +561,3 @@ Cela donne lieu à une architecture Master/Worker multi-niveaux :
 Ce modèle, appelé Programmation Multi-Niveaux, exploite les avantages de deux types de parallélisme : 
 - Le parallélisme sur mémoire distribuée au niveau supérieur.
 - Le parallélisme sur mémoire partagée au niveau inférieur.
-
-Nous détaillerons les possibilités offertes par cette architecture dans la section VII. Pour l'instant, nous devons évaluer cette nouvelle implémentation, comme nous l’avons fait pour `Assignment102` et `Pi.java`.

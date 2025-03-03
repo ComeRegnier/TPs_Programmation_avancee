@@ -523,41 +523,69 @@ Le speedup décroît lentement à mesure que le nombre de processeurs augmente. 
 
 Cette baisse indique que le code Pi.java perd en efficacité parallèle avec l'augmentation des ressources disponibles, mais cette perte reste contenue. Comparé à Assignment102, où la scalabilité chute bien plus rapidement, les résultats de Pi.java restent globalement satisfaisants.
 
-# V. Mise en œuvre en mémoire distribuée
+# V - Norme ISO : Efficiency et Effectiveness
 
-Les analyses précédentes ont montré que le paradigme Master/Worker offre une meilleure parallélisation par rapport à l’approche d'Assignment102. Nous allons maintenant transposer cet algorithme sur une architecture à mémoire distribuée.
+La norme **ISO/IEC 25000 SQuaRE** (*Software Quality Requirements and Evaluation*) fournit un cadre structuré pour définir, évaluer et améliorer la qualité des logiciels. Elle répond à un besoin de standardisation, garantissant une compréhension commune entre développeurs, gestionnaires de projet et utilisateurs finaux. En uniformisant les critères d’évaluation, cette norme facilite la détection et la correction des faiblesses des logiciels, contribuant ainsi à leur amélioration continue. Son adoption renforce la confiance des utilisateurs et réduit les coûts de maintenance ainsi que les risques d’échecs en production.
 
-### Paradigme Master/Worker et Architecture Client/Serveur
+---
 
-Le modèle Master/Worker est souvent opposé au paradigme Client/Serveur. Dans le cadre de cette architecture, le Maître agit comme un client, tandis que les Workers jouent le rôle de serveurs. Nous allons implémenter cette approche sur une architecture distribuée avec des échanges via des sockets Java. Bien que le code de base fonctionne déjà, la partie calcul de Pi n’est pas encore intégrée.
+## Efficiency et Effectiveness dans la norme ISO/IEC 25000
 
-### Diagramme d'exécution du code
+Dans cette norme, **efficiency** (*efficience*) et **effectiveness** (*effectivité*) sont des notions fondamentales pour évaluer la qualité d’un logiciel. Bien qu’elles puissent sembler similaires, leur application varie selon la perspective adoptée :
 
-Dans cette architecture, un *Master Socket* initialise l’expérience Monte Carlo. Il répartit les tâches en attribuant un nombre de points à chaque *Worker Socket*. Chaque Worker calcule les résultats (actuellement une valeur approximative) et renvoie ces résultats au Master.
+- **Product Quality (Qualité du produit)** : du point de vue technique.
+- **Quality in Use (Qualité en utilisation)** : du point de vue de l’utilisateur final.
 
-### Diagramme de classes UML
+---
 
-Les échanges entre le *Master Socket* et les *Worker Sockets* s'appuient sur les classes de la bibliothèque `java.net`. Les flux de données sont gérés par `InputStreamReader` et `OutputStreamWriter`, tandis que `PrintWriter` et `BufferedWriter` sont utilisés pour envoyer des messages, et `BufferedReader` pour les lire.
+## **Product Quality (Qualité du produit)**
 
-Pour exécuter le programme, il est nécessaire de lancer différentes instances de `WorkerSocket` et `MasterSocket`. Lors du lancement de `WorkerSocket`, il faut spécifier le port pour l’envoi et la réception des flux de données. De son côté, le *MasterSocket* demande à l'utilisateur d'entrer le nombre de Workers et leurs ports.
+- **Cible** : Développeurs et équipes techniques.
+- **Objectif** : Analyser les caractéristiques internes du logiciel (code, architecture, performance).
+- **Exemple** : Un logiciel bien structuré, respectant les principes de performance, maintenabilité et extensibilité, sera plus facile à déployer, maintenir et faire évoluer.
 
-**Note :** Les ports saisis lors du lancement du *Master* n'ont pas d'importance, car le programme affecte automatiquement les ports 25545, 25546, etc., jusqu'à avoir suffisamment de ports pour chaque Worker.
+### **Définitions dans le contexte de Product Quality :**
+- **Efficiency** (*Efficience*) : Performance du logiciel en fonction des ressources utilisées (*temps, mémoire, processeur, etc.*) pour accomplir une tâche dans des conditions spécifiées.
+- **Effectiveness** (*Effectivité*) : Capacité du logiciel à atteindre ses objectifs fonctionnels en fournissant des résultats corrects et précis.
 
-### A. Implémentation du calcul par méthode
+> **Exemple** : Un logiciel de calcul est "effectif" s'il produit des résultats exacts, indépendamment de l’optimisation des ressources utilisées.
 
-#### Nouvelle classe WorkerSocket
+### **Performance Efficiency**
+L’efficience du produit est évaluée par :
+- **Le temps d’exécution** : rapidité avec laquelle le logiciel accomplit ses tâches.
+- **La consommation mémoire** : quantité de mémoire utilisée pendant les opérations.
 
-Une méthode `performMonteCarloComputation` a été ajoutée à la classe `WorkerSocket`. Elle est appelée lorsque le Worker reçoit une demande de calcul, ce qui lui permet de traiter sa part des points Monte Carlo et de renvoyer le résultat au Master.
+---
 
-### B. Implémentation du calcul en utilisant Pi.java
+## **Quality in Use (Qualité en utilisation)**
 
-Bien qu’une méthode dédiée au calcul Monte Carlo soit fonctionnelle, une approche plus intéressante consiste à réutiliser l'algorithme Pi.java. Ainsi, la classe *Master* de Pi.java est intégrée directement dans le `WorkerSocket`.
+- **Cible** : Utilisateurs finaux et clients.
+- **Objectif** : Évaluer si le logiciel permet aux utilisateurs d’atteindre leurs objectifs dans des scénarios d’utilisation réels.
+- **Exemple** : Une application mobile qui permet aux utilisateurs de réserver un billet d’avion rapidement, sans frustration ni erreur, sera perçue comme **efficace** (*effective*) et **efficiente** (*efficient*).
 
-Cela donne lieu à une architecture Master/Worker multi-niveaux :
+### **Définitions dans le contexte de Quality in Use :**
+- **Efficiency** (*Efficience*) : Quantité de ressources (*temps, effort, nombre d’interactions, etc.*) nécessaires pour accomplir une tâche.
+- **Effectiveness** (*Effectivité*) : Capacité de l’utilisateur à atteindre ses objectifs sans erreur ni difficulté.
 
-1. **Niveau 1 :** Un *Master Socket* répartit les tâches entre plusieurs `Worker Sockets` sur une architecture à mémoire distribuée.
-2. **Niveau 2 :** Chaque `Worker Socket` devient un Master d'une architecture Master/Worker à mémoire partagée, en intégrant l'implémentation de Pi.java.
+> **Exemple** : Une application de réservation d’avion est "effective" si l’utilisateur peut finaliser sa réservation avec succès.
 
-Ce modèle, appelé Programmation Multi-Niveaux, exploite les avantages de deux types de parallélisme : 
-- Le parallélisme sur mémoire distribuée au niveau supérieur.
-- Le parallélisme sur mémoire partagée au niveau inférieur.
+---
+
+## **Comparaison : Product Quality vs Quality in Use**
+
+| **Critère**        | **Product Quality** (Qualité du produit) | **Quality in Use** (Qualité en utilisation) |
+|--------------------|--------------------------------|--------------------------------|
+| **Cible**        | Développeurs & équipes techniques | Utilisateurs finaux & clients |
+| **Perspective**  | Performance et architecture interne | Expérience utilisateur |
+| **Efficiency**   | Optimisation des ressources système | Optimisation des ressources utilisateur |
+| **Effectiveness** | Précision des résultats | Succès dans l’atteinte des objectifs |
+
+### **Différences clés :**
+- **Product Quality** mesure la performance interne du logiciel en termes d’utilisation des ressources techniques.
+- **Quality in Use** évalue l’impact sur l’utilisateur en analysant son interaction avec le produit et sa capacité à atteindre ses objectifs.
+
+Bien que ces deux notions évaluent des qualités similaires, elles diffèrent par leur perspective :
+- **Product Quality** concerne l’optimisation technique du logiciel.
+- **Quality in Use** mesure l’efficacité perçue par l’utilisateur final.
+
+Ces deux approches sont complémentaires et permettent une évaluation complète de la qualité logicielle, tant du point de vue technique que du point de vue utilisateur.

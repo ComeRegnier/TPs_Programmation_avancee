@@ -589,3 +589,37 @@ Bien que ces deux notions évaluent des qualités similaires, elles diffèrent p
 - **Quality in Use** mesure l’efficacité perçue par l’utilisateur final.
 
 Ces deux approches sont complémentaires et permettent une évaluation complète de la qualité logicielle, tant du point de vue technique que du point de vue utilisateur.
+
+# VI - Expérience avec plusieurs machines
+
+Cette dernière expérience vise à exécuter master worker sur plusieurs machines en exploitant des sockets pour la communication. Pour cela, plusieurs machines de la salle G26 de l'IUT ont été mobilisées. Chaque machine a été configurée pour exécuter un worker chargé de générer un nombre défini de points, tandis qu’un maître, exécuté sur une machine distincte, coordonnait les workers et agrégait les résultats. Une variante de cette approche repose sur une double parallélisation, où le nombre de workers est ajusté en fonction du nombre de threads disponibles sur chaque machine.
+
+Dans un premier temps, il est nécessaire de préparer les machines en installant Java et en désactivant le pare-feu afin de permettre la communication via les ports :
+
+```sh
+sudo yum install java-devel
+sudo systemctl stop firewalld
+```
+
+Le lancement d’un worker socket s’effectue en compilant et exécutant les fichiers sources avec les paramètres appropriés :
+```sh
+javac MONTE_CARLO/Sockets/WorkerSocket.java
+javac MONTE_CARLO/Sockets/MasterSocket.java
+java MONTE_CARLO.Sockets.WorkerSocket 25545
+```
+
+### Conclusion
+
+Cette étude approfondie de la méthode de Monte Carlo pour l’estimation de π met en lumière plusieurs enjeux essentiels liés à la programmation parallèle et distribuée.
+
+L’analyse des performances a d’abord révélé une nette amélioration grâce aux implémentations parallèles Pi et PiSocket, par rapport à une exécution séquentielle. En particulier, l’étude de la scalabilité forte a mis en évidence un speedup quasi-linéaire jusqu’à 16 workers sur la machine de test, en adéquation avec ses capacités matérielles. Toutefois, au-delà de ce seuil, les performances plafonnent, illustrant ainsi les limites inhérentes à l’architecture matérielle et la nécessité d’optimiser l’exploitation des ressources disponibles.
+
+En revanche, les résultats obtenus pour la scalabilité faible se sont montrés moins encourageants, avec des speedups généralement inférieurs à 1. Cela suggère que l’augmentation de la charge de travail ne se traduit pas systématiquement par un gain de performance proportionnel, mettant ainsi en évidence l’importance d’une conception algorithmique rigoureuse pour gérer efficacement de grands volumes de données.
+
+Un autre aspect crucial de cette étude est le compromis entre précision et temps de calcul. Si l’augmentation du nombre de points permet d’améliorer l’estimation de π, elle engendre également une augmentation du temps d’exécution. Il est donc essentiel de trouver un équilibre entre ces deux facteurs en fonction des besoins spécifiques de l’application.
+
+En comparant les approches Pi (threads) et PiSocket (sockets), il apparaît que la première offre de meilleures performances. Cette différence s’explique en grande partie par l’overhead induit par la communication entre processus dans l’implémentation PiSocket.
+
+Enfin, l’évaluation des performances selon les critères de la norme ISO/IEC 25010 a mis en évidence la bonne efficacité et précision des algorithmes étudiés. Cependant, des marges d’optimisation subsistent, notamment en ce qui concerne la réduction de l’overhead et l’adaptation dynamique aux différentes architectures matérielles.
+
+Cette étude ouvre la voie à de futures recherches, notamment sur l’optimisation des algorithmes pour améliorer la scalabilité faible et sur l’exploration de nouvelles techniques de parallélisation afin de surmonter les limitations matérielles identifiées.

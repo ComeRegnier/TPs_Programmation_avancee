@@ -43,7 +43,7 @@ On peut ainsi en déduire une approximation de π :
 
 Ainsi, plus n tot augmente, plus l'estimation de π se précise.
 
-## II. Algorithme et parallélisation
+# II. Algorithme et parallélisation
 
 ### A. Itération parallèle
 
@@ -447,6 +447,14 @@ Le **speedup** est loin d'être linéaire et semble diminuer proportionnellement
 
 Cette tendance n'est pas surprenante, étant donné les résultats obtenus en scalabilité forte. Le **speedup** presque linéaire de cette dernière suggère que l'ajout de cœurs n’a pas d'impact significatif sur la performance du programme. Par conséquent, doubler le nombre de points mène logiquement à un temps d'exécution deux fois plus long.
 
+#### Erreur obtenue 
+
+Assignment102 affiche des performances contrastées en matière de scalabilité, mais parvient néanmoins à fournir une estimation efficace de π.
+
+Pour mesurer cette efficacité, nous avons étudié l'évolution de l'erreur moyenne en fonction du nombre total de points générés. Le graphique ci-dessous illustre cette relation :
+
+![erreur assignment 102](./images/Erreur_Assignment102.png)
+
 ---
 
 ### D. Résultats Pi.Java
@@ -522,6 +530,16 @@ Les tests de scalabilité faible ont également été réalisés, avec les résu
 Le speedup décroît lentement à mesure que le nombre de processeurs augmente. Bien que cette décroissance soit modérée par rapport à l'Assignment102, le speedup passe de 1 (avec un seul processeur) à environ 0,75 avec 16 processeurs.
 
 Cette baisse indique que le code Pi.java perd en efficacité parallèle avec l'augmentation des ressources disponibles, mais cette perte reste contenue. Comparé à Assignment102, où la scalabilité chute bien plus rapidement, les résultats de Pi.java restent globalement satisfaisants.
+
+#### Erreur obtenue
+
+Afin d'évaluer la précision de l'approximation de π, nous avons analysé un nuage de points représentant la moyenne des erreurs obtenues pour chaque configuration du nombre total de points générés.
+
+![erreur pi](./images/Erreur_Pi.png)
+
+Le graphique met en évidence une distribution des erreurs bien plus régulière pour Pi.java par rapport à Assignment102, avec une tendance claire à la diminution de l'erreur lorsque le nombre de points augmente. La médiane de l'erreur est de 2.71 × 10⁻⁵ pour Pi.java, contre 2.59 × 10⁻⁵ pour Assignment102.
+
+Bien que Pi.java présente une erreur médiane légèrement plus élevée, sa distribution est nettement plus homogène et moins sujette à des fluctuations erratiques qu’Assignment102. Il reste néanmoins difficile de déterminer avec certitude quelle implémentation est la plus performante pour l'estimation de π, car les écarts observés pourraient être dus à des variations aléatoires plutôt qu'à une réelle différence d'efficacité algorithmique.
 
 # V - Norme ISO : Efficiency et Effectiveness
 
@@ -612,13 +630,13 @@ java MONTE_CARLO.Sockets.WorkerSocket 25545
 
 Cette étude approfondie de la méthode de Monte Carlo pour l’estimation de π met en lumière plusieurs enjeux essentiels liés à la programmation parallèle et distribuée.
 
-L’analyse des performances a d’abord révélé une nette amélioration grâce aux implémentations parallèles Pi et PiSocket, par rapport à une exécution séquentielle. En particulier, l’étude de la scalabilité forte a mis en évidence un speedup quasi-linéaire jusqu’à 16 workers sur la machine de test, en adéquation avec ses capacités matérielles. Toutefois, au-delà de ce seuil, les performances plafonnent, illustrant ainsi les limites inhérentes à l’architecture matérielle et la nécessité d’optimiser l’exploitation des ressources disponibles.
+L’analyse des performances a d’abord révélé une nette amélioration grâce aux implémentations parallèles Pi et Master Worker, par rapport à une exécution séquentielle. En particulier, l’étude de la scalabilité forte a mis en évidence un speedup quasi-linéaire jusqu’à 16 workers sur la machine de test, en adéquation avec ses capacités matérielles. Toutefois, au-delà de ce seuil, les performances plafonnent, illustrant ainsi les limites inhérentes à l’architecture matérielle et la nécessité d’optimiser l’exploitation des ressources disponibles.
 
 En revanche, les résultats obtenus pour la scalabilité faible se sont montrés moins encourageants, avec des speedups généralement inférieurs à 1. Cela suggère que l’augmentation de la charge de travail ne se traduit pas systématiquement par un gain de performance proportionnel, mettant ainsi en évidence l’importance d’une conception algorithmique rigoureuse pour gérer efficacement de grands volumes de données.
 
 Un autre aspect crucial de cette étude est le compromis entre précision et temps de calcul. Si l’augmentation du nombre de points permet d’améliorer l’estimation de π, elle engendre également une augmentation du temps d’exécution. Il est donc essentiel de trouver un équilibre entre ces deux facteurs en fonction des besoins spécifiques de l’application.
 
-En comparant les approches Pi (threads) et PiSocket (sockets), il apparaît que la première offre de meilleures performances. Cette différence s’explique en grande partie par l’overhead induit par la communication entre processus dans l’implémentation PiSocket.
+En comparant les approches Pi (threads) et Master Worker, il apparaît que la première offre de meilleures performances. Cette différence s’explique en grande partie par l’overhead induit par la communication entre processus dans l’implémentation de Master Worker.
 
 Enfin, l’évaluation des performances selon les critères de la norme ISO/IEC 25010 a mis en évidence la bonne efficacité et précision des algorithmes étudiés. Cependant, des marges d’optimisation subsistent, notamment en ce qui concerne la réduction de l’overhead et l’adaptation dynamique aux différentes architectures matérielles.
 
